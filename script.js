@@ -1,17 +1,26 @@
-// Global Variables
-var gameMode = "default";
-var playerName = [];
-var dealerHand = [];
-var player1Hand = [];
-var player2Hand = [];
-var player1Points = 100;
-var player2Points = 100;
-var drawCount = 2;
+// GAMEMODES:
+// GAMEMODE_DEFAULT
+// GAMEMODE_NAME_INPUT
+// GAMEMODE_BET_INPUT
+// GAMEMODE_BLACKJACK_START
+// GAMEMODE_BLACKJACK_INPUT
+// GAMEMODE_BLACKJACK_END
 
-// Helper Function: Create a standard deck of playing cards
+// GLOBAL VARIABLES:
+var GAMEMODE = "GAMEMODE_DEFAULT";
+var PLAYERNAMES = [];
+var PLAYERCREDIT = 100;
+var PLAYERBET = 0;
+var PLAYERHAND = [];
+var PLAYERHANDVALUE = "";
+var DEALERHAND = [];
+var DEALERHANDVALUE = "";
+var CARDSINHAND = 2;
+
+// HELPER FUNCTION: CREATE DECK
 var makeDeck = function () {
   var cardDeck = [];
-  var suits = ["hearts", "diamonds", "clubs", "spades"];
+  var suits = ["♥", "♦", "♣", "♠"];
 
   var suitIndex = 0;
   while (suitIndex < suits.length) {
@@ -48,16 +57,15 @@ var makeDeck = function () {
     }
     suitIndex += 1;
   }
-  console.log(cardDeck);
   return cardDeck;
 };
 
-// Helper Function: Get a random index ranging from 0 to max to be used in 'shuffleCards'
+// HELPER FUNCTION: GENERATE RANDOM INDEX [0 - MAX]
 var getRandomIndex = function (max) {
   return Math.floor(Math.random() * max);
 };
 
-// Helper Function: Shuffle cards grenerated in 'makeDeck'
+// HELPER FUNCTION: SHUFFLE "MAKEDECK"
 var shuffleCards = function (cardDeck) {
   var currentIndex = 0;
   while (currentIndex < cardDeck.length) {
@@ -72,13 +80,13 @@ var shuffleCards = function (cardDeck) {
   return cardDeck;
 };
 
-// Helper Function: Save player names into playerName array
+// HELPER FUNCTION: SAVE INPUT TO "PLAYERNAMES"
 var savePlayerName = function (input) {
-  playerName.push(input);
-  console.log(playerName);
+  PLAYERNAMES.push(input);
+  console.log(PLAYERNAMES);
 };
 
-// Helper Function: Calculate total sum of cards in hand
+// HELPER FUNCTION: CALCULATE SUM OF POWER IN "HAND"
 var calcSumOfCardsInHand = function (aHand) {
   var runningSum = 0;
   var counter = 0;
@@ -91,6 +99,7 @@ var calcSumOfCardsInHand = function (aHand) {
   return runningSum;
 };
 
+// HELPER FUNCTION: OUTPUT NAME & SUIT OF CARDS DRAWN
 var cardDisplay = function (playerHand) {
   var counter = 0;
   var tellHand = "";
@@ -98,17 +107,18 @@ var cardDisplay = function (playerHand) {
     var tellHand =
       tellHand +
       "[" +
-      player1Hand[counter].name +
+      PLAYERHAND[counter].name +
       " of " +
-      player1Hand[counter].suit +
+      PLAYERHAND[counter].suit +
       "]<br>";
     counter += 1;
   }
   return tellHand;
 };
 
+// HELPER FUNCTION: RESET CARDS IN HAND
 var handReset = function (playerHand) {
-  drawCount = 2;
+  CARDSINHAND = 2;
   playerHand.pop();
   playerHand.pop();
   playerHand.pop();
@@ -116,317 +126,359 @@ var handReset = function (playerHand) {
   playerHand.pop();
 };
 
+// HELPER FUNCTION: DEALER DRAWS & CALCULATE SUM OF POWER OF CARDS IN HAND
 var dealer = function (DECK) {
   var drawCardDealer = 0;
 
   while (drawCardDealer < 2) {
-    dealerHand.push(DECK.pop());
+    DEALERHAND.push(DECK.pop());
     drawCardDealer += 1;
-    console.log(dealerHand);
   }
 
-  var dealerFinalRank = calcSumOfCardsInHand(dealerHand);
-  var dealerDrawCount = 2;
-  while (dealerFinalRank < 16 && dealerDrawCount < 5) {
-    dealerHand.push(DECK.pop());
-    dealerDrawCount += 1;
-    dealerFinalRank = calcSumOfCardsInHand(dealerHand);
+  var DEALERHANDVALUE = calcSumOfCardsInHand(DEALERHAND);
+  var dealerCARDSINHAND = 2;
+  while (DEALERHANDVALUE < 16 && dealerCARDSINHAND < 5) {
+    DEALERHAND.push(DECK.pop());
+    dealerCARDSINHAND += 1;
+    DEALERHANDVALUE = calcSumOfCardsInHand(DEALERHAND);
   }
-
-  // dealerFinalRank = calcSumOfCardsInHand(dealerHand);
-  console.log(dealerFinalRank);
-  console.log(dealerHand);
+  return DEALERHANDVALUE;
 };
 
-// Main Function: Blackjack
+// MAIN FUNCTION
 var main = function (input) {
-  // Generate deck and shuffle it
+  // GENERATE DECK & SHUFFLE
   var DECK = shuffleCards(makeDeck());
 
-  dealer(DECK);
-
-  // [Player 1] welcome message, change mode to player 1
-  if (gameMode == "default") {
+  // OUTPUT DEFAULT MESSAGE, CHANGE MODE TO ENTER NAME
+  if (GAMEMODE == "GAMEMODE_DEFAULT") {
     var myOutputValue =
-      "Welcome to Blackjack! <br><br> You are Player 1, please enter your name and hit submit.";
-    gameMode = "player1Name";
+      "Welcome to Blackjack! <br><br> You will start with <b>$" +
+      PLAYERCREDIT +
+      "</b>.<br><br> Please enter your <b>name</b> and hit submit.";
+
+    GAMEMODE = "GAMEMODE_NAME_INPUT";
     return myOutputValue;
   }
 
-  // [Player 1] save name, draw 2 cards, output cards drawn, change mode
-  if (gameMode == "player1Name") {
+  // ENSURE INPUT FIELD IS NOT EMPTY
+  if (GAMEMODE == "GAMEMODE_NAME_INPUT") {
     if (input == "") {
       var myOutputValue =
-        "You are Player 1, please enter your name and hit submit.";
+        "You left the field empty, please enter your <b>name</b> and hit submit.";
       return myOutputValue;
+
+      // SAVE & OUTPUT PLAYER NAME, CHANGE MODE TO ENTER BETS
     } else {
       savePlayerName(input);
-      gameMode = "player1";
+      GAMEMODE = "GAMEMODE_BET_INPUT";
+      myOutputValue =
+        "Hello <b>" +
+        PLAYERNAMES[0] +
+        "</b>,<br><br>Credits: <b>$" +
+        PLAYERCREDIT +
+        "</b><br><br>Please enter your <b>bet</b> and hit submit.";
+      return myOutputValue;
     }
   }
 
-  if (gameMode == "player1") {
+  if (GAMEMODE == "GAMEMODE_BET_INPUT" && PLAYERCREDIT < 0) {
+    myOutputValue =
+      "You ran <b>out of credits</b>, the house always wins! <br><br>☺☺☺<br><br>Click on submit to <b>restart</b>.";
+    PLAYERCREDIT = 100;
+    PLAYERBET = 0;
+    GAMEMODE = "GAMEMODE_DEFAULT";
+    return myOutputValue;
+  }
+
+  if (GAMEMODE == "GAMEMODE_BET_INPUT") {
+    // ENSURE INPUT FIELD IS NOT EMPTY, CHECK IF BET AMOUNT IS VALID, SAVE & DISPLAY BET AMOUNT, CHANGE MODE TO START BLACKJACK
+    if (input !== "" && input <= PLAYERCREDIT) {
+      PLAYERBET = Number(input);
+      PLAYERCREDIT = PLAYERCREDIT - input;
+      myOutputValue =
+        "You have placed <b>$" +
+        PLAYERBET +
+        "</b> as your bet, click on submit to continue.";
+      GAMEMODE = "GAMEMODE_BLACKJACK_START";
+      return myOutputValue;
+
+      // DISPLAY ERROR MESSAGE IF INPUT IS NOT VALID
+    } else {
+      myOutputValue =
+        "Credits: <b>$" +
+        PLAYERCREDIT +
+        "</b><br><br>Please enter a <b>valid bet</b>.";
+      return myOutputValue;
+    }
+  }
+
+  // ADD 2 CARDS TO PLAYERHAND, DISPLAY CARDS, CHANGE MODE
+  if (GAMEMODE == "GAMEMODE_BLACKJACK_START") {
     var drawCardP1 = 0;
-
     while (drawCardP1 < 2) {
-      player1Hand.push(DECK.pop());
+      PLAYERHAND.push(DECK.pop());
       drawCardP1 += 1;
-      console.log(player1Hand);
+      console.log(PLAYERHAND);
     }
-
     myOutputValue =
-      playerName[0] +
-      "<br><br> You Drew: <br><br>" +
-      cardDisplay(player1Hand) +
-      "<br><br> Enter '1' and hit submit to draw another card. <br> Enter '2' and hit submit to end you turn";
-
-    gameMode = "player1Choice";
-
+      "Credit: <b>$" +
+      PLAYERCREDIT +
+      "<br><br> Your Hand: <br></b>" +
+      cardDisplay(PLAYERHAND) +
+      "<br> Enter <b>'1'</b> and hit submit <b>to draw</b> another card. <br> Enter <b>'2'</b> and hit submit to <b>end</b> you turn.";
+    GAMEMODE = "GAMEMODE_BLACKJACK_INPUT";
     return myOutputValue;
   }
 
-  // [Player 1] draws first extra card, option to draw another or end turn
-  if (gameMode == "player1Choice") {
-    if (input == "1" && drawCount == 2) {
-      player1Hand.push(DECK.pop());
-      drawCount += 1;
-      console.log(player1Hand);
+  // ALLOW PLAYER TO CHOOSE TO DRAW CARD OR END TURN [3RD CARD]
+  if (GAMEMODE == "GAMEMODE_BLACKJACK_INPUT") {
+    if (input == "1" && CARDSINHAND == 2) {
+      PLAYERHAND.push(DECK.pop());
+      CARDSINHAND += 1;
+
       myOutputValue =
-        playerName[0] +
-        "<br><br> You Drew: <br><br>" +
-        cardDisplay(player1Hand) +
-        "<br><br> Enter '1' and hit submit to draw another card. <br> Enter '2' and hit submit to end you turn";
-      console.log(drawCount);
-      return myOutputValue;
-    }
-
-    // [Player 1] draws second extra card, option to draw another or end turn
-    if (input == "1" && drawCount == 3) {
-      player1Hand.push(DECK.pop());
-      drawCount += 1;
-      console.log(player1Hand);
-      myOutputValue =
-        playerName[0] +
-        "<br><br> You Drew: <br><br>" +
-        cardDisplay(player1Hand) +
-        "<br><br> Enter '1' and hit submit to draw another card. <br> Enter '2' and hit submit to end you turn";
-      console.log(drawCount);
-      return myOutputValue;
-    }
-
-    // [Player 1] draws last extra card and ends turn
-    if (input == "1" && drawCount == 4) {
-      player1Hand.push(DECK.pop());
-      drawCount += 1;
-      console.log(player1Hand);
-      myOutputValue =
-        playerName[0] +
-        "<br><br> You Drew: <br><br>" +
-        cardDisplay(player1Hand) +
-        "<br><br> Enter '1' and hit submit to draw another card. <br> Enter '2' and hit submit to end you turn";
-      console.log(drawCount);
-      return myOutputValue;
-    }
-
-    // [Player 1] prevent exceeding card draw limit and ends turn
-    if (input == "1" && drawCount == 5) {
-      myOutputValue =
-        playerName[0] +
-        "<br><br> You Drew: <br><br>" +
-        cardDisplay(player1Hand) +
-        "<br><br> You have hit the draw limit of 5 cards, hit submit to proceed";
-
-      gameMode = "default2";
-      console.log(drawCount);
-      return myOutputValue;
-    }
-
-    // [Player 1] ends turn
-    if (input == "2") {
-      myOutputValue = "You have ended your turn, hit submit to proceed";
-      gameMode = "default2";
+        "Credit: <b>$" +
+        PLAYERCREDIT +
+        "<br><br> Your Hand: <br></b>" +
+        cardDisplay(PLAYERHAND) +
+        "<br> Enter <b>'1'</b> and hit submit <b>to draw</b> another card. <br> Enter <b>'2'</b> and hit submit to <b>end</b> you turn.";
       return myOutputValue;
     }
   }
 
-  // [Player 2] welcome message, change mode to player 2
-  if (gameMode == "default2" && playerName.length == 1) {
+  // ALLOW PLAYER TO CHOOSE TO DRAW CARD OR END TURN [4TH CARD]
+  if (GAMEMODE == "GAMEMODE_BLACKJACK_INPUT") {
+    if (input == "1" && CARDSINHAND == 3) {
+      PLAYERHAND.push(DECK.pop());
+      CARDSINHAND += 1;
+
+      myOutputValue =
+        "Credit: <b>$" +
+        PLAYERCREDIT +
+        "<br><br> Your Hand: <br></b>" +
+        cardDisplay(PLAYERHAND) +
+        "<br> Enter <b>'1'</b> and hit submit <b>to draw</b> another card. <br> Enter <b>'2'</b> and hit submit to <b>end</b> you turn.";
+      return myOutputValue;
+    }
+  }
+
+  // ALLOW PLAYER TO CHOOSE TO DRAW CARD OR END TURN [5TH CARD]
+  if (GAMEMODE == "GAMEMODE_BLACKJACK_INPUT") {
+    if (input == "1" && CARDSINHAND == 4) {
+      PLAYERHAND.push(DECK.pop());
+      CARDSINHAND += 1;
+
+      myOutputValue =
+        "Credit: <b>$" +
+        PLAYERCREDIT +
+        "<br><br> Your Hand: <br></b>" +
+        cardDisplay(PLAYERHAND) +
+        "<br> Enter <b>'1'</b> and hit submit <b>to draw</b> another card. <br> Enter <b>'2'</b> and hit submit to <b>end</b> you turn.";
+      return myOutputValue;
+    }
+  }
+
+  // NOTIFY PLAYER HE HAS HIT MAX NUMBER OF CARDS, DISPLAY HAND, CHANGE MODE
+  if (input == "1" && CARDSINHAND == 5) {
     myOutputValue =
-      "Welcome to Blackjack! <br><br> You are Player 2, please enter your name and hit submit.";
-    gameMode = "player2Name";
+      "Credit: <b>$" +
+      PLAYERCREDIT +
+      "<br><br> Your Hand: <br></b>" +
+      cardDisplay(PLAYERHAND) +
+      "<br><br> You have hit the <b>draw limit</b> of 5 cards, hit submit to proceed.";
+    GAMEMODE = "GAMEMODE_BLACKJACK_END";
     return myOutputValue;
   }
 
-  if (gameMode == "default2" && playerName.length == 2) {
-    gameMode = "player2";
-  }
-
-  if (gameMode == "player2Name") {
-    if (input == "") {
-      var myOutputValue =
-        "You are Player 2, please enter your name and hit submit.";
-      return myOutputValue;
-    } else {
-      savePlayerName(input);
-      gameMode = "player2";
-    }
-  }
-
-  // [Player 2] save name, draw 2 cards, output cards drawn, change mode
-  if (gameMode == "player2") {
-    var p2FinalRank = 0;
-    drawCount = 2;
-    var drawCardP2 = 0;
-
-    while (drawCardP2 < 2) {
-      player2Hand.push(DECK.pop());
-      drawCardP2 += 1;
-      console.log(player2Hand);
-    }
-
-    myOutputValue =
-      playerName[1] +
-      "<br><br> You Drew: <br><br>" +
-      cardDisplay(player2Hand) +
-      "<br><br> Enter '1' and hit submit to draw another card. <br> Enter '2' and hit submit to end you turn";
-
-    gameMode = "player2Choice";
-
+  // CHANGE MODE TO CHECK WIN CONDITION
+  if (input == "2") {
+    myOutputValue = "You have <b>ended</b> your turn, hit submit to proceed.";
+    GAMEMODE = "GAMEMODE_BLACKJACK_END";
     return myOutputValue;
   }
 
-  // [Player 2] draws first extra card, option to draw another or end turn
-  if (gameMode == "player2Choice") {
-    if (input == "1" && drawCount == 2) {
-      player2Hand.push(DECK.pop());
-      drawCount += 1;
-      console.log(player2Hand);
+  // GAME MODE TO DECIDE WINNER
+  if (GAMEMODE == "GAMEMODE_BLACKJACK_END") {
+    // PLAYER HAND IS SUMMED UP
+    PLAYERHANDVALUE = calcSumOfCardsInHand(PLAYERHAND);
+    console.log("this is PLAYER'S TOTAL " + PLAYERHANDVALUE);
+
+    // DEALER DRAWS 2-5 CARDS, HAND IS SUMMED UP
+    var DEALERPOWER = dealer(DECK);
+    console.log("this is DEALER'S TOTAL " + DEALERPOWER);
+
+    // WIN CONDITIONS
+    // PLAYER BUST
+    if (PLAYERHANDVALUE > 21 && DEALERPOWER < 22) {
       myOutputValue =
-        playerName[1] +
-        "<br><br> You Drew: <br><br>" +
-        cardDisplay(player2Hand) +
-        "<br><br> Enter '1' and hit submit to draw another card. <br> Enter '2' and hit submit to end you turn";
-      console.log(drawCount);
-      return myOutputValue;
+        "Dealer's Hand: <b>" +
+        DEALERPOWER +
+        "<br>" +
+        PLAYERNAMES[0] +
+        "'s</b> Hand: <b>" +
+        PLAYERHANDVALUE +
+        "</b><br><br><b>Dealer</b>, wins!<br><br>You lost <b>$" +
+        PLAYERBET +
+        "</b>. <br>Remaining Credits: <b>$" +
+        PLAYERCREDIT +
+        "</b>. <br><br>Click on submit to start the next round.";
+
+      PLAYERBET = "0";
+      GAMEMODE = "GAMEMODE_BET_INPUT";
+      handReset(PLAYERHAND);
+      handReset(DEALERHAND);
     }
 
-    // [Player 2] draws second extra card, option to draw another or end turn
-    if (input == "1" && drawCount == 3) {
-      player2Hand.push(DECK.pop());
-      drawCount += 1;
-      console.log(player2Hand);
+    // DEALER BLACKJACK
+    if (DEALERPOWER == 21) {
       myOutputValue =
-        playerName[1] +
-        "<br><br> You Drew: <br><br>" +
-        cardDisplay(player2Hand) +
-        "<br><br> Enter '1' and hit submit to draw another card. <br> Enter '2' and hit submit to end you turn";
-      console.log(drawCount);
-      return myOutputValue;
+        "Dealer's Hand: <b>" +
+        DEALERPOWER +
+        "<br>" +
+        PLAYERNAMES[0] +
+        "'s</b> Hand: <b>" +
+        PLAYERHANDVALUE +
+        "</b><br><br><b>Dealer</b>, wins!<br><br>You lost <b>$" +
+        PLAYERBET +
+        "</b>. <br>Remaining Credits: <b>$" +
+        PLAYERCREDIT +
+        "</b>. <br><br>Click on submit to start the next round.";
+
+      PLAYERBET = "0";
+      GAMEMODE = "GAMEMODE_BET_INPUT";
+      handReset(PLAYERHAND);
+      handReset(DEALERHAND);
     }
 
-    // [Player 2] draws last extra card and ends turn
-    if (input == "1" && drawCount == 4) {
-      player2Hand.push(DECK.pop());
-      drawCount += 1;
-      console.log(player2Hand);
-      myOutputValue =
-        playerName[1] +
-        "<br><br> You Drew: <br><br>" +
-        cardDisplay(player2Hand) +
-        "<br><br> Enter '1' and hit submit to draw another card. <br> Enter '2' and hit submit to end you turn";
-      console.log(drawCount);
-      return myOutputValue;
-    }
-
-    // [Player 2] prevent exceeding card draw limit, ends turn, proceed to check for winner
-    if (input == "1" && drawCount == 5) {
-      myOutputValue =
-        playerName[1] +
-        "<br><br> You Drew: <br><br>" +
-        cardDisplay(player2Hand) +
-        "<br><br> You have hit the draw limit of 5 cards, hit submit to proceed";
-
-      gameMode = "compare";
-      console.log(drawCount);
-      return myOutputValue;
-    }
-
-    // [Player 2] ends turn, proceed to check for winner
-    if (input == "2") {
-      myOutputValue = "You have ended your turn, hit submit to proceed";
-      gameMode = "compare";
-      return myOutputValue;
-    }
-  }
-
-  // Win Condition
-  if (gameMode == "compare") {
-    p1FinalRank = calcSumOfCardsInHand(player1Hand);
-    console.log("this is p1FinalRank" + p1FinalRank);
-    p2FinalRank = calcSumOfCardsInHand(player2Hand);
-    console.log("this is p2FinalRank" + p2FinalRank);
-
-    if (p1FinalRank > 21) {
-      myOutputValue = playerName[1] + ", wins!";
-      gameMode = "player1";
-      handReset(player1Hand);
-      handReset(player2Hand);
-    } // playerName[1] win, reset draw count, place cards back into deck
-
-    if (p2FinalRank > 21) {
-      myOutputValue = playerName[0] + ", wins!";
-      gameMode = "player1";
-      handReset(player1Hand);
-      handReset(player2Hand);
-    } // playerName[0] win, reset draw count, place cards back into deck
-
-    if (p1FinalRank == 21) {
-      myOutputValue = playerName[0] + ", wins!";
-      gameMode = "player1";
-      handReset(player1Hand);
-      handReset(player2Hand);
-    } // playerName[0] win [blackjack], reset draw count, place cards back into deck
-
-    if (p2FinalRank == 21) {
-      myOutputValue = playerName[1] + ", wins!";
-      gameMode = "player1";
-      handReset(player1Hand);
-      handReset(player2Hand);
-    } // playerName[1] win [blackjack], reset draw count, place cards back into deck
-
-    if (p1FinalRank < p2FinalRank && p2FinalRank <= 21) {
-      myOutputValue = playerName[1] + ", wins!";
-      gameMode = "player1";
-      handReset(player1Hand);
-      handReset(player2Hand);
-    } // playerName[1] win, reset draw count, place cards back into deck
-
-    if (p2FinalRank < p1FinalRank && p1FinalRank <= 21) {
-      myOutputValue = playerName[0] + ", wins!";
-      gameMode = "player1";
-      handReset(player1Hand);
-      handReset(player2Hand);
-    } // playerName[0] win, reset draw count, place cards back into deck
-
-    if (p1FinalRank == p2FinalRank || (p1FinalRank > 21 && p2FinalRank > 21)) {
-      myOutputValue = "Its a draw, better luck next time!";
-      gameMode = "player1";
-      handReset(player1Hand);
-      handReset(player2Hand);
-    } // draw, reset draw count, place cards back into deck
-
-    return myOutputValue;
-
-    // Redirect players if they enter invalid input
-  } else {
+    // DEALER WINS BY HIGHER VALUE
     if (
-      gameMode == "player1" ||
-      "player2" ||
-      "player1Choice" ||
-      "player2Choice"
+      PLAYERHANDVALUE < DEALERPOWER &&
+      DEALERPOWER < 22 &&
+      PLAYERHANDVALUE < 22
     ) {
       myOutputValue =
-        "Input is invalid, please try again.<br><br>Enter '1' and hit submit to draw another card. <br> Enter '2' and hit submit to end you turn";
+        "Dealer's Hand: <b>" +
+        DEALERPOWER +
+        "<br>" +
+        PLAYERNAMES[0] +
+        "'s</b> Hand: <b>" +
+        PLAYERHANDVALUE +
+        "</b><br><br><b>Dealer</b>, wins!<br><br>You lost <b>$" +
+        PLAYERBET +
+        "</b>. <br>Remaining Credits: <b>$" +
+        PLAYERCREDIT +
+        "</b>. <br><br>Click on submit to start the next round.";
+
+      PLAYERBET = "0";
+      GAMEMODE = "GAMEMODE_BET_INPUT";
+      handReset(PLAYERHAND);
+      handReset(DEALERHAND);
+    }
+
+    // DEALER BUST
+    if (DEALERPOWER > 21 && PLAYERHANDVALUE < 22) {
+      PLAYERCREDIT = PLAYERCREDIT + PLAYERBET + PLAYERBET;
+      myOutputValue =
+        "Dealer's Hand: <b>" +
+        DEALERPOWER +
+        "<br>" +
+        PLAYERNAMES[0] +
+        "'s</b> Hand: <b>" +
+        PLAYERHANDVALUE +
+        "</b><br><br><b>You</b>, win!<br><br>You received <b>$" +
+        PLAYERBET +
+        "</b>. <br>Remaining Credits: <b>$" +
+        PLAYERCREDIT +
+        "</b>. <br><br>Click on submit to start the next round.";
+
+      PLAYERBET = "0";
+      GAMEMODE = "GAMEMODE_BET_INPUT";
+      handReset(PLAYERHAND);
+      handReset(DEALERHAND);
+    }
+
+    // PLAYER BLACKJACK
+    if (PLAYERHANDVALUE == 21) {
+      PLAYERCREDIT = PLAYERCREDIT + PLAYERBET + PLAYERBET;
+      myOutputValue =
+        "Dealer's Hand: <b>" +
+        DEALERPOWER +
+        "<br>" +
+        PLAYERNAMES[0] +
+        "'s</b> Hand: <b>" +
+        PLAYERHANDVALUE +
+        "</b><br><br><b>You</b>, win!<br><br>You received <b>$" +
+        PLAYERBET +
+        "</b>. <br>Remaining Credits: <b>$" +
+        PLAYERCREDIT +
+        "</b>. <br><br>Click on submit to start the next round.";
+
+      PLAYERBET = "0";
+      GAMEMODE = "GAMEMODE_BET_INPUT";
+      handReset(PLAYERHAND);
+      handReset(DEALERHAND);
+    }
+
+    // PLAYER WINS BY HIGHER VALUE
+    if (
+      DEALERPOWER < PLAYERHANDVALUE &&
+      DEALERPOWER < 22 &&
+      PLAYERHANDVALUE < 22
+    ) {
+      PLAYERCREDIT = PLAYERCREDIT + PLAYERBET + PLAYERBET;
+      myOutputValue =
+        "Dealer's Hand: <b>" +
+        DEALERPOWER +
+        "<br>" +
+        PLAYERNAMES[0] +
+        "'s</b> Hand: <b>" +
+        PLAYERHANDVALUE +
+        "</b><br><br><b>You</b>, win!<br><br>You received <b>$" +
+        PLAYERBET +
+        "</b>. <br>Remaining Credits: <b>$" +
+        PLAYERCREDIT +
+        "</b>. <br><br>Click on submit to start the next round.";
+
+      PLAYERBET = "0";
+      GAMEMODE = "GAMEMODE_BET_INPUT";
+      handReset(PLAYERHAND);
+      handReset(DEALERHAND);
+    }
+
+    // DRAW
+    if (
+      PLAYERHANDVALUE == DEALERPOWER ||
+      (PLAYERHANDVALUE > 21 && DEALERPOWER > 21)
+    ) {
+      myOutputValue =
+        "Dealer's Hand: <b>" +
+        DEALERPOWER +
+        "<br>" +
+        PLAYERNAMES[0] +
+        "'s</b> Hand: <b>" +
+        PLAYERHANDVALUE +
+        "</b><br><br><b>It's a tie!</b><br><br>Remaining Credits: <b>$" +
+        PLAYERCREDIT +
+        "</b>. <br><br>Click on submit to start the next round.";
+
+      PLAYERBET = "0";
+      GAMEMODE = "GAMEMODE_BET_INPUT";
+      handReset(PLAYERHAND);
+      handReset(DEALERHAND);
+    }
+
+    return myOutputValue;
+
+    // INVALID INPUT MESSAGE TO GUIDE USER
+  } else {
+    if (GAMEMODE == "GAMEMODE_BLACKJACK_START" || "GAMEMODE_BLACKJACK_INPUT") {
+      myOutputValue =
+        "Credit: <b>$" +
+        PLAYERCREDIT +
+        "<br><br> Your Hand: <br></b>" +
+        cardDisplay(PLAYERHAND) +
+        "<br><b>Input is invalid, please try again.</b><br><br> Enter <b>'1'</b> and hit submit <b>to draw</b> another card. <br> Enter <b>'2'</b> and hit submit to <b>end</b> you turn.";
       return myOutputValue;
     }
   }
