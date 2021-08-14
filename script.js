@@ -324,7 +324,7 @@ var main = function (input) {
         PLAYERCREDIT +
         "</b>. <br><br>Click on submit to start the next round.";
 
-      PLAYERBET = "0";
+      PLAYERBET = 0;
       GAMEMODE = "GAMEMODE_BET_INPUT";
       handReset(PLAYERHAND);
       handReset(DEALERHAND);
@@ -345,7 +345,7 @@ var main = function (input) {
         PLAYERCREDIT +
         "</b>. <br><br>Click on submit to start the next round.";
 
-      PLAYERBET = "0";
+      PLAYERBET = 0;
       GAMEMODE = "GAMEMODE_BET_INPUT";
       handReset(PLAYERHAND);
       handReset(DEALERHAND);
@@ -370,7 +370,7 @@ var main = function (input) {
         PLAYERCREDIT +
         "</b>. <br><br>Click on submit to start the next round.";
 
-      PLAYERBET = "0";
+      PLAYERBET = 0;
       GAMEMODE = "GAMEMODE_BET_INPUT";
       handReset(PLAYERHAND);
       handReset(DEALERHAND);
@@ -392,7 +392,7 @@ var main = function (input) {
         PLAYERCREDIT +
         "</b>. <br><br>Click on submit to start the next round.";
 
-      PLAYERBET = "0";
+      PLAYERBET = 0;
       GAMEMODE = "GAMEMODE_BET_INPUT";
       handReset(PLAYERHAND);
       handReset(DEALERHAND);
@@ -414,7 +414,7 @@ var main = function (input) {
         PLAYERCREDIT +
         "</b>. <br><br>Click on submit to start the next round.";
 
-      PLAYERBET = "0";
+      PLAYERBET = 0;
       GAMEMODE = "GAMEMODE_BET_INPUT";
       handReset(PLAYERHAND);
       handReset(DEALERHAND);
@@ -440,7 +440,7 @@ var main = function (input) {
         PLAYERCREDIT +
         "</b>. <br><br>Click on submit to start the next round.";
 
-      PLAYERBET = "0";
+      PLAYERBET = 0;
       GAMEMODE = "GAMEMODE_BET_INPUT";
       handReset(PLAYERHAND);
       handReset(DEALERHAND);
@@ -451,6 +451,7 @@ var main = function (input) {
       PLAYERHANDVALUE == DEALERPOWER ||
       (PLAYERHANDVALUE > 21 && DEALERPOWER > 21)
     ) {
+      PLAYERCREDIT = PLAYERCREDIT + PLAYERBET;
       myOutputValue =
         "Dealer's Hand: <b>" +
         DEALERPOWER +
@@ -462,7 +463,7 @@ var main = function (input) {
         PLAYERCREDIT +
         "</b>. <br><br>Click on submit to start the next round.";
 
-      PLAYERBET = "0";
+      PLAYERBET = 0;
       GAMEMODE = "GAMEMODE_BET_INPUT";
       handReset(PLAYERHAND);
       handReset(DEALERHAND);
