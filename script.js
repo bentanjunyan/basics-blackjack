@@ -182,7 +182,7 @@ var main = function (input) {
     }
   }
 
-  if (GAMEMODE == "GAMEMODE_BET_INPUT" && PLAYERCREDIT < 0) {
+  if (GAMEMODE == "GAMEMODE_BET_INPUT" && PLAYERCREDIT <= 0) {
     myOutputValue =
       "You ran <b>out of credits</b>, the house always wins! <br><br>☺☺☺<br><br>Click on submit to <b>restart</b>.";
     PLAYERCREDIT = 100;
